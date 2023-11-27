@@ -1,24 +1,38 @@
-const amqp = require('amqplib/callback_api');
+import { connect } from 'amqplib/callback_api.js';
 
-amqp.connect('amqp://localhost', function(error0, connection) {
-  if (error0) {
-    throw error0;
-  }
-  connection.createChannel(function(error1, channel) {
-    if (error1) {
-      throw error1;
+if (!process.env.RABBIT_HOST) {
+    console.error('RABBIT_HOST is not defined');
+    process.exit(1);
+}
+
+if (!process.env.RABBIT_QUEUE) {
+    console.error('RABBIT_QUEUE is not defined');
+    process.exit(1);
+}
+
+const {
+    RABBIT_HOST,
+    RABBIT_QUEUE
+} = process.env;
+
+connect(RABBIT_HOST, function (error0, connection) {
+    if (error0) {
+        throw error0;
     }
-    const queue = 'hello';
+    connection.createChannel(function (error1, channel) {
+        if (error1) {
+            throw error1;
+        }
 
-    channel.assertQueue(queue, {
-      durable: false
-    });
+        channel.assertQueue(RABBIT_QUEUE, {
+            durable: false
+        });
 
-    console.log(" [*] Waiting for messages in %s. To exit press CTRL+C", queue);
-    channel.consume(queue, function(msg) {
-      console.log(" [x] Received %s", msg.content.toString());
-    }, {
-      noAck: true
+        console.log(" [*] Waiting for messages in %s. To exit press CTRL+C", RABBIT_QUEUE);
+        channel.consume(RABBIT_QUEUE, function (msg) {
+            console.log(" [x] Received %s", msg.content.toString());
+        }, {
+            noAck: true
+        });
     });
-  });
 });
