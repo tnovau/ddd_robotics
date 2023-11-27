@@ -1,0 +1,22 @@
+{
+  "name": "event_writer",
+  "version": "0.0.1",
+  "description": "Event writer",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "event",
+    "writer",
+    "node"
+  ],
+  "author": "Tomás Novau Foresi",
+  "license": "ISC",
+  "dependencies": {
+    "amqplib": "^0.10.3"
+  },
+  "volta": {
+    "node": "20.10.0"
+  }
+}
