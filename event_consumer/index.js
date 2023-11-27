@@ -1,4 +1,5 @@
 import { connect } from 'amqplib/callback_api.js';
+import { MeasurementOccurred } from '../common/events/MeasurementOccurred.js';
 
 if (!process.env.RABBIT_HOST) {
     console.error('RABBIT_HOST is not defined');
@@ -30,7 +31,9 @@ connect(RABBIT_HOST, function (error0, connection) {
 
         console.log(" [*] Waiting for messages in %s. To exit press CTRL+C", RABBIT_QUEUE);
         channel.consume(RABBIT_QUEUE, function (msg) {
-            console.log(" [x] Received %s", msg.content.toString());
+            const measurementOccurred = MeasurementOccurred.fromJSON(msg.content.toString());
+
+            console.log(" [x] Received %s", measurementOccurred);
         }, {
             noAck: true
         });
