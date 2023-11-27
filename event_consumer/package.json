@@ -1,0 +1,22 @@
+{
+  "name": "event_consumer",
+  "version": "0.0.1",
+  "description": "Event consumer",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "Event",
+    "consumer",
+    "node"
+  ],
+  "author": "Tomás Novau Foresi",
+  "license": "ISC",
+  "volta": {
+    "node": "20.10.0"
+  },
+  "dependencies": {
+    "amqplib": "^0.10.3"
+  }
+}
