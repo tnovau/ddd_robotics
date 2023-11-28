@@ -17,7 +17,8 @@
     "node": "20.10.0"
   },
   "dependencies": {
-    "amqplib": "^0.10.3"
+    "amqplib": "^0.10.3",
+    "mongodb": "^6.3.0"
   },
   "type": "module"
 }

@@ -1,5 +1,10 @@
-import { connect } from 'amqplib/callback_api.js';
+import { connect } from 'amqplib';
 import { MeasurementOccurred } from '../common/events/MeasurementOccurred.js';
+import { PartRepository } from './infrastructure/PartRepository.js';
+import { MeasurementRepository } from './infrastructure/MeasurementRepository.js';
+import { createClient } from './infrastructure/db.js';
+import { Measurement } from '../common/domain/entities/Measurement.js';
+import { Control } from '../common/domain/entities/Control.js';
 
 if (!process.env.RABBIT_HOST) {
     console.error('RABBIT_HOST is not defined');
@@ -11,31 +16,77 @@ if (!process.env.RABBIT_QUEUE) {
     process.exit(1);
 }
 
+if (process.env.MONGO_URI === undefined) {
+    throw new Error("MONGO_URI environment variable is not defined");
+}
+
+if (process.env.MONGO_DB === undefined) {
+    throw new Error("MONGO_DB environment variable is not defined");
+}
+
 const {
     RABBIT_HOST,
-    RABBIT_QUEUE
+    RABBIT_QUEUE,
+    MONGO_URI,
+    MONGO_DB
 } = process.env;
 
-connect(RABBIT_HOST, function (error0, connection) {
-    if (error0) {
-        throw error0;
-    }
-    connection.createChannel(function (error1, channel) {
-        if (error1) {
-            throw error1;
-        }
+(async () => {
+    const conn = await connect(RABBIT_HOST);
 
-        channel.assertQueue(RABBIT_QUEUE, {
-            durable: false
-        });
+    const channel = await conn.createChannel();
+    await channel.assertQueue(RABBIT_QUEUE, { durable: false });
 
-        console.log(" [*] Waiting for messages in %s. To exit press CTRL+C", RABBIT_QUEUE);
-        channel.consume(RABBIT_QUEUE, function (msg) {
+    channel.consume(RABBIT_QUEUE, async function (msg) {
+        const mongoClient = createClient(MONGO_URI);
+
+        try {
+            console.log('Conecting  to MongoDB');
+            await mongoClient.connect();
+            const db = mongoClient.db(MONGO_DB);
+
+            console.log('Connected to MongoDB');
+
+            const partRepository = new PartRepository(db);
+            const measurementRepository = new MeasurementRepository(db);
+
             const measurementOccurred = MeasurementOccurred.fromJSON(msg.content.toString());
 
-            console.log(" [x] Received %s", measurementOccurred);
-        }, {
-            noAck: true
-        });
+            const partDocument = await partRepository.findById(measurementOccurred.partId);
+
+            if (partDocument === null) {
+                throw new Error(`Part with id ${measurementOccurred.partId} not found`);
+            }
+
+            const featureDocument = partDocument.features.find(x => x.id === measurementOccurred.featureId);
+
+            const controlDocument = featureDocument.controls.find(x => x.id === measurementOccurred.controlId);
+
+            const control = new Control(
+                controlDocument.id,
+                controlDocument.name,
+                controlDocument.idealMeasurement,
+                controlDocument.tolerance
+            );
+
+            const measurement = new Measurement(
+                measurementOccurred.partId,
+                measurementOccurred.featureId,
+                control,
+                measurementOccurred.measurement
+            );
+
+            console.log('INSERTING MEASUREMENT');
+
+            const result = await measurementRepository.insert(measurement);
+
+            console.log(`Measurement with id ${result.insertedId} inserted`);
+        } catch (error) {
+            console.error(error);
+        } finally {
+            await mongoClient.close();
+        }
+    }, {
+        noAck: true
     });
-});
+})();
