@@ -41,7 +41,10 @@ const schema = buildSchema(`
 
     type Query {
         parts: [Part]
-        measurements(partId: String, featureId: String, controlId: String): [Measurement]
+    }
+
+    type Subscription {
+        measurements(partId: String, featureId: String): [Measurement]
     }
 
     type Measurement {
@@ -78,14 +81,14 @@ const root = {
             }))
         }));
     },
-    measurements: async ({ partId, featureId, controlId }) => {
+    measurements: async ({ partId, featureId }) => {
         const mongoClient = createClient(MONGO_URI);
         await mongoClient.connect();
         const db = mongoClient.db(MONGO_DB);
 
         const measurementRepository = new MeasurementRepository(db);
 
-        const measurementDocuments = await measurementRepository.find(partId, featureId, controlId);
+        const measurementDocuments = await measurementRepository.find(partId, featureId);
 
         return measurementDocuments.map(measurementDocument => ({
             id: measurementDocument._id,

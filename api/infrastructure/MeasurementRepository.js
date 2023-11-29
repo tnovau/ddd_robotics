@@ -8,7 +8,7 @@ export class MeasurementRepository extends Repository {
         super(db, "measurements");
     }
 
-    find(partId, featureId, controlId) {
-        return super.find({ partId, featureId, controlId });
+    find(partId, featureId) {
+        return super.find({ partId, featureId });
     }
 }
