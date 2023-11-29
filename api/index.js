@@ -1,6 +1,7 @@
 import express from "express"
 import { graphqlHTTP } from "express-graphql"
 import { buildSchema } from "graphql"
+import cors from "cors";
 import {
     createClient
 } from "../common/infrastructure/db.js"
@@ -99,6 +100,8 @@ const root = {
 }
 
 const app = express()
+app.use(cors())
+
 app.use(
     "/graphql",
     graphqlHTTP({
