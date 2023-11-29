@@ -16,14 +16,14 @@ export class Control {
      * @param {number} measurement
      */
     deviation(measurement) {
-        return Number(Math.abs(measurement - this.idealMeasurement).toPrecision(3));
+        return Number((measurement - this.idealMeasurement).toPrecision(3));
     }
 
     /**
      * @param {number} measurement
      */
     isOutOfTolerance(measurement) {
-        return this.deviation(measurement) > this.tolerance;
+        return Math.abs(this.deviation(measurement)) > this.tolerance;
     }
 
     /**
