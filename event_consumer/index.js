@@ -2,7 +2,7 @@ import { connect } from 'amqplib';
 import { MeasurementOccurred } from '../common/events/MeasurementOccurred.js';
 import { PartRepository } from './infrastructure/PartRepository.js';
 import { MeasurementRepository } from './infrastructure/MeasurementRepository.js';
-import { createClient } from './infrastructure/db.js';
+import { createClient } from '../common/infrastructure/db.js';
 import { Measurement } from '../common/domain/entities/Measurement.js';
 import { Control } from '../common/domain/entities/Control.js';
 

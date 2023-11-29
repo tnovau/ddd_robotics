@@ -16,14 +16,14 @@ export class Control {
      * @param {number} measurement
      */
     deviation(measurement) {
-        return measurement - this.idealMeasurement;
+        return Number(Math.abs(measurement - this.idealMeasurement).toPrecision(3));
     }
 
     /**
      * @param {number} measurement
      */
     isOutOfTolerance(measurement) {
-        return Math.abs(this.deviation(measurement)) > this.tolerance;
+        return this.deviation(measurement) > this.tolerance;
     }
 
     /**
@@ -31,5 +31,14 @@ export class Control {
      */
     deviationOutOfTolerance(measurement) {
         return this.isOutOfTolerance(measurement) ? this.deviation(measurement) : 0;
+    }
+
+    toDoc() {
+        return {
+            id: this.id,
+            name: this.name,
+            idealMeasurement: this.idealMeasurement,
+            tolerance: this.tolerance
+        };
     }
 }

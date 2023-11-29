@@ -26,7 +26,7 @@ const {
         '1764bdf3-4214-417a-89f2-3196aba3c7aa',
         '9c491cd1-377b-41b0-a81f-59c0b01ef1dd',
         'd8a5bd0f-f815-4c3e-b392-eedd6892f10d',
-        2.5
+        2.45
     );
     const message = JSON.stringify(measurementOccurred);
 
