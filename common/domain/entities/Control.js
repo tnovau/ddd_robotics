@@ -33,6 +33,18 @@ export class Control {
         return this.isOutOfTolerance(measurement) ? this.deviation(measurement) : 0;
     }
 
+    performance(measurement) {
+        if (this.isOutOfTolerance(measurement)) {
+            return "BAD";
+        }
+
+        if (this.idealMeasurement === measurement) {
+            return "PERFECT";
+        }
+
+        return "ACCEPTABLE";
+    }
+
     toDoc() {
         return {
             id: this.id,

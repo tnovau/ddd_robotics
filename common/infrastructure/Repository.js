@@ -20,4 +20,12 @@ export class Repository {
             _id: id
         });
     }
+
+    /**
+     * @param {*} filter
+     */
+    async find(filter = {})
+    {
+        return await this.db.collection(this.collection).find(filter).toArray();
+    }
 }

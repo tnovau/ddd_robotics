@@ -41,11 +41,8 @@ const {
         const mongoClient = createClient(MONGO_URI);
 
         try {
-            console.log('Conecting  to MongoDB');
             await mongoClient.connect();
             const db = mongoClient.db(MONGO_DB);
-
-            console.log('Connected to MongoDB');
 
             const partRepository = new PartRepository(db);
             const measurementRepository = new MeasurementRepository(db);
@@ -75,8 +72,6 @@ const {
                 control,
                 measurementOccurred.measurement
             );
-
-            console.log('INSERTING MEASUREMENT');
 
             const result = await measurementRepository.insert(measurement);
 

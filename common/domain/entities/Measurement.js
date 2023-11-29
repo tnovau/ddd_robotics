@@ -25,6 +25,10 @@ export class Measurement {
         return this.control.deviationOutOfTolerance(this.measurement);
     }
 
+    get performance() {
+        return this.control.performance(this.measurement);
+    }
+
     toDoc() {
         return {
             partId: this.partId,
@@ -32,7 +36,8 @@ export class Measurement {
             controlId: this.control.id,
             measurement: this.measurement,
             deviation: this.deviation,
-            deviationOutOfTolerance: this.deviationOutOfTolerance
+            deviationOutOfTolerance: this.deviationOutOfTolerance,
+            performance: this.performance,
         };
     }
 }
